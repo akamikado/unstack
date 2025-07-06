@@ -1,6 +1,9 @@
 #include "../include/netdev.h"
-#include "../include/lib.h"
+#include "../include/tun.h"
+#include "../include/util.h"
+#include <stdint.h>
 #include <stdio.h>
+#include <sys/poll.h>
 
 struct net_device *dev;
 
@@ -15,7 +18,22 @@ struct net_device *net_device_alloc(const char *ipaddr) {
   return temp_dev;
 }
 
-// Change ip address later
+// TODO: Change ip address later
 void net_device_init() { dev = net_device_alloc("120.0.0.1"); }
 
 void net_device_free() { _free(dev); }
+
+// TODO
+static void net_device_receive_skb(int fd) {}
+
+void net_device_start_loop() {
+  char tun_dev[UINT16_MAX];
+  int tun_fd = tun_allocate(tun_dev);
+  struct pollfd pfd = {.fd = tun_fd, .events = POLLIN};
+
+  while (poll(&pfd, 1, -1) != -1) {
+    if (pfd.revents && POLLIN) {
+      net_device_receive_skb(tun_fd);
+    }
+  }
+}
