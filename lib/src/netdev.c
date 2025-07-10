@@ -32,7 +32,7 @@ void net_device_start_loop() {
   struct pollfd pfd = {.fd = tun_fd, .events = POLLIN};
 
   while (poll(&pfd, 1, -1) != -1) {
-    if (pfd.revents && POLLIN) {
+    if (pfd.revents & POLLIN) {
       net_device_receive_skb(tun_fd);
     }
   }
