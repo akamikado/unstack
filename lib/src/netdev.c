@@ -1,4 +1,5 @@
 #include "../include/netdev.h"
+#include "../include/skb.h"
 #include "../include/tun.h"
 #include "../include/util.h"
 #include <stdint.h>
@@ -23,8 +24,16 @@ void net_device_init() { dev = net_device_alloc("120.0.0.1"); }
 
 void net_device_free() { _free(dev); }
 
-// TODO
-static void net_device_receive_skb(int fd) {}
+static void net_device_receive_skb(int fd) {
+  struct sk_buff *buff = alloc_skb();
+  int len = tun_read(fd, buff->head);
+  if (len == -1) {
+    _perror("Error in reading from tun if");
+  }
+  buff->len = len;
+  buff->tail = buff->head + buff->len;
+  // TODO: send buffer to ip_rcv
+}
 
 void net_device_start_loop() {
   char tun_dev[UINT16_MAX];
