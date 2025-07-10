@@ -2,19 +2,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+void _perror(const char *err) {
+  perror(err);
+  exit(1);
+}
+
 void *_malloc(size_t size) {
   void *ptr = malloc(size);
   if (ptr == NULL) {
-    perror("Error in malloc");
-    exit(1);
+    _perror("Error in malloc");
   }
   return ptr;
 }
 
 void _free(void *ptr) {
   if (ptr == NULL) {
-    perror("Error: Trying to free null ptr");
-    exit(1);
+    _perror("Error: Trying to free null ptr");
   }
   free(ptr);
 }
