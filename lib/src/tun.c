@@ -32,11 +32,9 @@ int tun_allocate(char *dev) {
   return fd;
 }
 
-size_t tun_read(int fd, uint8_t *buf) {
+size_t tun_read(int fd, u8 *buf) {
   size_t len = read(fd, (void *)buf, UINT16_MAX);
   return len;
 }
 
-void tun_write(int fd, uint8_t *buf, size_t count) {
-  write(fd, (void *)buf, count);
-}
+void tun_write(int fd, u8 *buf, size_t count) { write(fd, (void *)buf, count); }

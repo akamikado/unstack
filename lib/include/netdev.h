@@ -1,10 +1,10 @@
 #ifndef NETDEV_H
 #define NETDEV_H
-#include <stdint.h>
+#include "util.h"
 #include <unistd.h>
 
 struct net_device {
-  uint32_t ipaddr;
+  u32 ipaddr;
 };
 
 void net_device_init();

@@ -1,4 +1,5 @@
 #include "../include/netdev.h"
+#include "../include/ip.h"
 #include "../include/skb.h"
 #include "../include/tun.h"
 #include "../include/util.h"
@@ -32,7 +33,7 @@ static void net_device_receive_skb(int fd) {
   }
   buff->len = len;
   buff->tail = buff->head + buff->len;
-  // TODO: send buffer to ip_rcv
+  ip_rcv(buff);
 }
 
 void net_device_start_loop() {
