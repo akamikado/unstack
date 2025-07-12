@@ -1,6 +1,7 @@
 #include "../include/ip.h"
+#include "../include/tcp.h"
 
-static struct iphdr *get_iphdr_from_skb(struct sk_buff *skb) {
+static struct iphdr *get_hdr(struct sk_buff *skb) {
   return (struct iphdr *)(skb->data);
 }
 
@@ -16,7 +17,7 @@ static int verify_ip_csum(struct iphdr *hdr, u8 ihl) {
 }
 
 void ip_rcv(struct sk_buff *skb) {
-  struct iphdr *hdr = get_iphdr_from_skb(skb);
+  struct iphdr *hdr = get_hdr(skb);
   skb->data += hdr->ihl * 4;
 
   if (hdr->ihl < 5 || hdr->ver != 4) {
@@ -29,9 +30,9 @@ void ip_rcv(struct sk_buff *skb) {
 
   switch ((enum ProtocolNumbers)hdr->protocol) {
   case TCP:
-    // TODO: pass to tcp_rcv
+    tcp_rcv(skb);
   default:
-    goto error;
+    goto drop;
   }
 
 error:
