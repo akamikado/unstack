@@ -1,8 +1,10 @@
 #ifndef SKB_H
 #define SKB_H
+#include "sock.h"
 #include "util.h"
 
 struct sk_buff {
+  struct sock *sk;
   u32 len;
   u8 *head;
   u8 *data;

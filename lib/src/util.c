@@ -21,3 +21,25 @@ void _free(void *ptr) {
   }
   free(ptr);
 }
+
+int verify_checksum(void *hdr, u8 len) {
+  u32 sum = 0;
+  int pos = 0;
+  for (; pos < len; pos += 2) {
+    sum += *(u16 *)(hdr + pos);
+  }
+  sum = (sum >> 16) + (sum & 0xffff);
+  sum = ~sum;
+  return (sum & 0xffff) == 0;
+}
+
+u16 calculate_checksum(void *hdr, u8 len) {
+  u32 sum = 0;
+  int pos = 0;
+  for (; pos < len; pos += 2) {
+    sum += *(u16 *)(hdr + pos);
+  }
+  sum = (sum >> 16) + (sum & 0xffff);
+  sum = ~sum;
+  return (sum & 0xffff);
+}

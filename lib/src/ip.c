@@ -5,17 +5,6 @@ static struct iphdr *get_hdr(struct sk_buff *skb) {
   return (struct iphdr *)(skb->data);
 }
 
-static int verify_ip_csum(struct iphdr *hdr, u8 ihl) {
-  u32 sum = 0;
-  int pos = 0;
-  for (; pos < ihl; pos += 2) {
-    sum += *(u16 *)(hdr + pos);
-  }
-  sum = (sum >> 16) + (sum & 0xffff);
-  sum = ~sum;
-  return (sum & 0xffff) == 0;
-}
-
 void ip_rcv(struct sk_buff *skb) {
   struct iphdr *hdr = get_hdr(skb);
   skb->data += hdr->ihl * 4;
@@ -24,7 +13,7 @@ void ip_rcv(struct sk_buff *skb) {
     goto error;
   }
 
-  if (!verify_ip_csum(hdr, hdr->ihl)) {
+  if (!verify_checksum(hdr, hdr->ihl)) {
     goto drop;
   }
 

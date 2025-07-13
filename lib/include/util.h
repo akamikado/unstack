@@ -12,4 +12,6 @@ void *_malloc(size_t size);
 void _free(void *ptr);
 void _perror(const char *err);
 
+int verify_checksum(void *hdr, u8 len);
+
 #endif

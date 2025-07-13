@@ -4,17 +4,6 @@ static struct tcphdr *get_header(struct sk_buff *skb) {
   return (struct tcphdr *)(skb->data);
 }
 
-static int verify_checksum(struct tcphdr *hdr, u8 len) {
-  u32 sum = 0;
-  size_t pos = 0;
-  for (; pos < len; pos += 2) {
-    sum += *(u16 *)(hdr + pos);
-  }
-  sum = (sum >> 16) + (sum & 0xffff);
-  sum = ~sum;
-  return (sum & 0xffff) == 0;
-}
-
 void tcp_rcv(struct sk_buff *skb) {
   struct tcphdr *hdr = get_header(skb);
   skb->data += hdr->data_offset * 4;
@@ -22,9 +11,25 @@ void tcp_rcv(struct sk_buff *skb) {
     goto error;
   }
 
+  // TODO: verify packet and pass data up
+
 error:
 drop:
   free_skb(skb);
 out:
   return;
+}
+
+void tcp_transmit_skb(struct sk_buff *skb, struct sock *sk) {
+  if (skb == NULL) {
+    return;
+  }
+
+  /*
+   * TODO:
+   * 1. create tcp header with seq and ack num using snd variables in sk
+   * 2. move data header in skb back by size of tcp header and copy header data
+   * to where data ptr is
+   * 3. send to ip_transmit_skb
+   * */
 }
