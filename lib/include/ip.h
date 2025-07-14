@@ -37,11 +37,14 @@ struct ip_sock {
 
   u32 src_addr;
   u32 dst_addr;
-  u8 ttl;
+  u8 tos;
   u8 flags;
+  u8 protocol;
+  u8 ttl;
 };
 
 void ip_rcv(struct sk_buff *skb);
 
 void ip_transmit_skb(struct sk_buff *skb, struct sock *sk);
+
 #endif

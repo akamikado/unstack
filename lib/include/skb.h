@@ -21,6 +21,13 @@ static inline void skb_reserve(struct sk_buff *skb, int len) {
   skb->tail += len;
 }
 
+static inline u8 *skb_pull(struct sk_buff *skb, int len) {
+  u8 *pos = skb->data;
+  skb->data += len;
+  skb->len -= len;
+  return pos;
+}
+
 static inline u8 *skb_put(struct sk_buff *skb, int len) {
   u8 *pos = skb->tail;
   skb->tail += len;

@@ -22,26 +22,30 @@ void _free(void *ptr) {
   free(ptr);
 }
 
-int verify_checksum(void *hdr, u8 len) {
+u32 checksum_partial(void *hdr, u32 len) {
   u32 sum = 0;
   int pos = 0;
   for (; pos < len; pos += 2) {
     sum += *(u16 *)(hdr + pos);
   }
-  sum = (sum >> 16) + (sum & 0xffff);
-  sum = ~sum;
-  return (sum & 0xffff) == 0;
+  return sum;
 }
 
-u16 calculate_checksum(void *hdr, u8 len) {
-  u32 sum = 0;
-  int pos = 0;
-  for (; pos < len; pos += 2) {
-    sum += *(u16 *)(hdr + pos);
-  }
+u16 checksum_fold(u32 psum) {
+  u16 sum = (psum >> 16) + (psum & 0xffff);
+  return sum;
+}
+
+int verify_checksum(void *hdr, u32 len) {
+  u32 sum = checksum_partial(hdr, len);
   sum = (sum >> 16) + (sum & 0xffff);
-  sum = ~sum;
-  return (sum & 0xffff);
+  return ~checksum_fold(sum) == 0;
+}
+
+u16 calculate_checksum(void *hdr, u32 len) {
+  u32 sum = checksum_partial(hdr, len);
+  sum = (sum >> 16) + (sum & 0xffff);
+  return ~checksum_fold(sum);
 }
 
 u16 htons(u16 hostshort) {

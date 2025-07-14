@@ -12,8 +12,10 @@ void *_malloc(size_t size);
 void _free(void *ptr);
 void _perror(const char *err);
 
-int verify_checksum(void *hdr, u8 len);
-u16 calculate_checksum(void *hdr, u8 len);
+u32 checksum_partial(void *hdr, u32 len);
+u16 checksum_fold(u32 psum);
+int verify_checksum(void *hdr, u32 len);
+u16 calculate_checksum(void *hdr, u32 len);
 
 u16 htons(u16 hostshort);
 u32 htonl(u32 hostlong);
