@@ -25,10 +25,6 @@ void tcp_transmit_skb(struct sk_buff *skb, struct sock *sk) {
     return;
   }
 
-  /*
-   * TODO:
-   * 2. send to ip_transmit_skb
-   * */
   struct tcp_sock *tsk = (struct tcp_sock *)sk;
   struct tcb_skb *tcb = TCP_SKB_TCB(skb);
 
