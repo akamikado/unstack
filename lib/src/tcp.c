@@ -27,9 +27,23 @@ void tcp_transmit_skb(struct sk_buff *skb, struct sock *sk) {
 
   /*
    * TODO:
-   * 1. create tcp header with seq and ack num using snd variables in sk
-   * 2. move data header in skb back by size of tcp header and copy header data
-   * to where data ptr is
-   * 3. send to ip_transmit_skb
+   * 2. send to ip_transmit_skb
    * */
+  struct tcp_sock *tsk = (struct tcp_sock *)sk;
+  struct tcb_skb *tcb = TCP_SKB_TCB(skb);
+
+  // Not supporting options
+  int tcp_header_size = 20;
+  struct tcphdr *th = (struct tcphdr *)skb_push(skb, MAX_TCPHDR_LEN);
+  th->src_port = tsk->src_port;
+  th->dst_port = tsk->dst_port;
+  th->seq_num = tcb->seq;
+  th->ack_num = tcb->ack;
+  *((u8 *)th + 12) = htons((tcp_header_size >> 2) << 12 | tcb->flags);
+  th->window = tsk->rcv_wnd;
+  th->checksum = 0;
+  th->urg_ptr = 0;
+  th->checksum = calculate_checksum(th, tcp_header_size);
+
+  ip_transmit_skb(skb, sk);
 }

@@ -1,10 +1,10 @@
 #ifndef SOCK_H
 #define SOCK_H
 
-enum ProtocolFamily { AF_INET };
+#define AF_INET 0
 
 struct sock {
-  enum ProtocolFamily family;
+  int family;
 
   // TODO: read and write sk_buff queues
 };

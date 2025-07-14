@@ -43,3 +43,20 @@ u16 calculate_checksum(void *hdr, u8 len) {
   sum = ~sum;
   return (sum & 0xffff);
 }
+
+u16 htons(u16 hostshort) {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+  return ((hostshort & 0xff00) >> 8) | ((hostshort & 0x00ff) << 8);
+#else
+  return hostshort;
+#endif
+}
+
+u32 htonl(u32 hostlong) {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+  return (htons((hostlong & 0xffff0000) >> 16) << 16) |
+         htons((hostlong & 0x0000ffff) >> 16);
+#else
+  return hostlong;
+#endif
+}

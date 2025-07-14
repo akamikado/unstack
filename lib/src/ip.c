@@ -17,8 +17,8 @@ void ip_rcv(struct sk_buff *skb) {
     goto drop;
   }
 
-  switch ((enum ProtocolNumbers)hdr->protocol) {
-  case TCP:
+  switch (hdr->protocol) {
+  case PROTOCOL_TCP:
     tcp_rcv(skb);
   default:
     goto drop;
@@ -31,3 +31,6 @@ drop:
 out:
   return;
 }
+
+// TODO
+void ip_transmit_skb(struct sk_buff *skb, struct sock *sk) {}
