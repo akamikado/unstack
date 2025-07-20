@@ -1,5 +1,5 @@
-#include "../include/tun.h"
-#include "../include/util.h"
+#include "include/tun.h"
+#include "include/util.h"
 #include <fcntl.h>
 #include <linux/if.h>
 #include <linux/if_tun.h>
@@ -37,4 +37,10 @@ size_t tun_read(int fd, u8 *buf) {
   return len;
 }
 
-void tun_write(int fd, u8 *buf, size_t count) { write(fd, (void *)buf, count); }
+int tun_write(int fd, u8 *buf, size_t count) {
+  int retval = -1;
+  if (write(fd, (void *)buf, count) > 0) {
+    retval = 0;
+  }
+  return retval;
+}

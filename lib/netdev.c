@@ -1,8 +1,8 @@
-#include "../include/netdev.h"
-#include "../include/ip.h"
-#include "../include/skb.h"
-#include "../include/tun.h"
-#include "../include/util.h"
+#include "include/netdev.h"
+#include "include/ip.h"
+#include "include/skb.h"
+#include "include/tun.h"
+#include "include/util.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <sys/poll.h>
@@ -38,7 +38,7 @@ static void net_device_receive_skb(int fd) {
 
 void net_device_start_loop() {
   char tun_dev[UINT16_MAX];
-  int tun_fd = tun_allocate(tun_dev);
+  tun_fd = tun_allocate(tun_dev);
   struct pollfd pfd = {.fd = tun_fd, .events = POLLIN};
 
   while (poll(&pfd, 1, -1) != -1) {

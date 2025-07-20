@@ -1,5 +1,4 @@
-#include "../include/util.h"
-#include <stdio.h>
+#include "include/util.h"
 #include <stdlib.h>
 
 void _perror(const char *err) {

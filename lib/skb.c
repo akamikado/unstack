@@ -1,5 +1,5 @@
-#include "../include/skb.h"
-#include "../include/util.h"
+#include "include/skb.h"
+#include "include/util.h"
 
 struct sk_buff *alloc_skb() {
   struct sk_buff *new = (struct sk_buff *)_malloc(sizeof(struct sk_buff));

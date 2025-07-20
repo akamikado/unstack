@@ -2,11 +2,21 @@
 #define UTIL_H
 
 #include <stdint.h>
+#include <stdio.h>
 #include <unistd.h>
 
 #define u8 uint8_t
 #define u16 uint16_t
 #define u32 uint32_t
+#define u64 uint64_t
+
+#define DEBUG
+
+#ifdef DEBUG
+#define debug(...) printf(__VA_ARGS__)
+#else
+#define debug(...)
+#endif
 
 void *_malloc(size_t size);
 void _free(void *ptr);

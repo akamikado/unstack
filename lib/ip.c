@@ -1,39 +1,48 @@
-#include "../include/ip.h"
-#include "../include/tcp.h"
+#include "include/ip.h"
+#include "include/tcp.h"
+#include "include/tun.h"
 
 static struct iphdr *get_hdr(struct sk_buff *skb) {
   return (struct iphdr *)(skb->data);
 }
 
+/*
+ * TODO:
+ * 1. fix error handling
+ * */
 void ip_rcv(struct sk_buff *skb) {
-  struct iphdr *hdr = (struct iphdr *)skb_pull(skb, get_hdr(skb)->ihl * 4);
+  struct iphdr *ih = (struct iphdr *)skb_pull(skb, get_hdr(skb)->ihl * 4);
 
-  if (hdr->ihl < 5 || hdr->ver != 4) {
+  if (ih->ihl < 5 || ih->ver != 4) {
     goto error;
   }
 
-  if (!verify_checksum(hdr, hdr->ihl)) {
+  if (!verify_checksum(ih, ih->ihl)) {
     goto drop;
   }
 
-  switch (hdr->protocol) {
-  case PROTOCOL_TCP:
+  switch (ih->protocol) {
+  case IP_PROTO_TCP:
     tcp_rcv(skb);
   default:
     goto drop;
   }
 
 error:
-  // TODO
 drop:
   free_skb(skb);
 out:
   return;
 }
 
-void ip_transmit_skb(struct sk_buff *skb, struct sock *sk) {
+/*
+ * TODO:
+ * 1. Fix how the data is passed to lower layer
+ * */
+int ip_transmit_skb(struct sk_buff *skb, struct sock *sk) {
+  int retval = -1;
   if (skb == NULL) {
-    return;
+    goto out;
   }
   struct ip_sock *isk = (struct ip_sock *)sk;
   struct iphdr *ih = (struct iphdr *)skb_push(skb, 20);
@@ -45,9 +54,11 @@ void ip_transmit_skb(struct sk_buff *skb, struct sock *sk) {
   ih->ttl = isk->ttl;
   ih->protocol = isk->protocol;
   ih->csum = 0;
-  ih->src_addr = isk->src_addr;
-  ih->dst_addr = isk->dst_addr;
-  ih->csum = calculate_checksum(ih, 20);
+  ih->src_addr = htonl(isk->src_addr);
+  ih->dst_addr = htonl(isk->dst_addr);
+  ih->csum = htons(calculate_checksum(ih, 20));
 
-  // TODO: figure out how to transmit skb
+  retval = tun_write(tun_fd, skb->data, skb->len);
+out:
+  return retval;
 }
