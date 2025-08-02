@@ -69,4 +69,6 @@ void tcp_rcv(struct sk_buff *skb);
 
 struct sock *tcp_alloc_sock();
 
+extern struct proto_ops tcp_ops;
+
 #endif

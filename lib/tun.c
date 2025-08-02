@@ -1,11 +1,15 @@
 #include "include/tun.h"
 #include "include/util.h"
+#include <errno.h>
 #include <fcntl.h>
 #include <linux/if.h>
 #include <linux/if_tun.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/ioctl.h>
+
+int *tun_fd = NULL;
 
 int tun_allocate(char *dev) {
   struct ifreq ifr;
@@ -39,7 +43,7 @@ size_t tun_read(int fd, u8 *buf) {
 
 int tun_write(int fd, u8 *buf, size_t count) {
   int retval = -1;
-  if (write(fd, (void *)buf, count) > 0) {
+  if (write(fd, (void *)buf, count) == count) {
     retval = 0;
   }
   return retval;

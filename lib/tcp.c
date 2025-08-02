@@ -1,4 +1,5 @@
 #include "include/tcp.h"
+#include "include/skb.h"
 #include "include/util.h"
 
 static u16 calculate_tcp_checksum(struct tcphdr *th, u32 src_addr, u32 dst_addr,
@@ -62,24 +63,30 @@ out:
 
 void tcp_snd_ack(struct sock *sk) {
   struct tcp_sock *tsk = tcp_sk(sk);
-  struct sk_buff *skb;
+  struct sk_buff *skb = alloc_skb();
 
-  skb_reserve(skb, MAX_TCPHDR_LEN);
+  skb_reserve(skb, MAX_TCPHDR_LEN + MAX_IPHDR_LEN);
   TCP_SKB_TCB(skb)->flags = TCP_FLAG_ACK;
   TCP_SKB_TCB(skb)->seq = tsk->snd_nxt;
   TCP_SKB_TCB(skb)->ack = tsk->rcv_nxt;
-  tcp_transmit_skb(skb, sk);
+
+  if (tcp_transmit_skb(skb, sk) < 0) {
+    free_skb(skb);
+  }
 }
 
 void tcp_snd_syn_ack(struct sock *sk) {
   struct tcp_sock *tsk = tcp_sk(sk);
-  struct sk_buff *skb;
+  struct sk_buff *skb = alloc_skb();
 
-  skb_reserve(skb, MAX_TCPHDR_LEN);
+  skb_reserve(skb, MAX_TCPHDR_LEN + MAX_IPHDR_LEN);
   TCP_SKB_TCB(skb)->flags = TCP_FLAG_SYN & TCP_FLAG_ACK;
   TCP_SKB_TCB(skb)->seq = tsk->snd_nxt++;
   TCP_SKB_TCB(skb)->ack = tsk->rcv_nxt;
-  tcp_transmit_skb(skb, sk);
+
+  if (tcp_transmit_skb(skb, sk) < 0) {
+    free_skb(skb);
+  }
 }
 
 /*
@@ -154,15 +161,20 @@ int tcp_connect(struct sock *sk, struct sockaddr *addr) {
     goto out;
   }
   tsk->ip_sk.dst_addr = addr->dst_addr;
-  tsk->ip_sk.dst_port = addr->dst_addr;
+  tsk->ip_sk.dst_port = addr->dst_port;
 
-  struct sk_buff *skb;
-  skb_reserve(skb, MAX_TCPHDR_LEN);
+  struct sk_buff *skb = alloc_skb();
+  skb_reserve(skb, MAX_TCPHDR_LEN + MAX_IPHDR_LEN);
   TCP_SKB_TCB(skb)->flags = TCP_FLAG_SYN;
   TCP_SKB_TCB(skb)->seq = tsk->snd_nxt++;
   TCP_SKB_TCB(skb)->ack = 0;
   tsk->state = SYN_SENT;
   retval = tcp_transmit_skb(skb, sk);
+  if (retval == 0) {
+    goto out;
+  }
+error:
+  free_skb(skb);
 out:
   return retval;
 }

@@ -58,7 +58,7 @@ int ip_transmit_skb(struct sk_buff *skb, struct sock *sk) {
   ih->dst_addr = htonl(isk->dst_addr);
   ih->csum = htons(calculate_checksum(ih, 20));
 
-  retval = tun_write(tun_fd, skb->data, skb->len);
+  retval = tun_write(*tun_fd, skb->data, skb->len);
 out:
   return retval;
 }

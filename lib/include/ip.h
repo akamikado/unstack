@@ -5,6 +5,8 @@
 #include "sock.h"
 #include "util.h"
 
+#define MAX_IPHDR_LEN 20
+
 #define IP_PROTO_TCP 6
 
 struct iphdr {

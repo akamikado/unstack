@@ -10,12 +10,15 @@
 #define u32 uint32_t
 #define u64 uint64_t
 
-#define DEBUG
-
 #ifdef DEBUG
-#define debug(...) printf(__VA_ARGS__)
+#define debug(...)                                                             \
+  do {                                                                         \
+    printf(__VA_ARGS__);                                                       \
+  } while (0)
 #else
-#define debug(...)
+#define debug(...)                                                             \
+  do {                                                                         \
+  } while (0)
 #endif
 
 void *_malloc(size_t size);

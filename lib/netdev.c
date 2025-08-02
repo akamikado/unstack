@@ -5,6 +5,7 @@
 #include "include/util.h"
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/poll.h>
 
 struct net_device *dev;
@@ -38,12 +39,13 @@ static void net_device_receive_skb(int fd) {
 
 void net_device_start_loop() {
   char tun_dev[UINT16_MAX];
-  tun_fd = tun_allocate(tun_dev);
-  struct pollfd pfd = {.fd = tun_fd, .events = POLLIN};
+  tun_fd = malloc(sizeof(int));
+  *tun_fd = tun_allocate(tun_dev);
+  struct pollfd pfd = {.fd = *tun_fd, .events = POLLIN};
 
   while (poll(&pfd, 1, -1) != -1) {
     if (pfd.revents & POLLIN) {
-      net_device_receive_skb(tun_fd);
+      net_device_receive_skb(*tun_fd);
     }
   }
 }

@@ -27,3 +27,13 @@ int _bind(struct socket *sock, struct sockaddr *addr) {
 out:
   return retval;
 }
+
+int _connect(struct socket *sock, struct sockaddr *serv_addr) {
+  int retval = -1;
+  if (sock == NULL || serv_addr == NULL) {
+    goto out;
+  }
+  retval = sock->ops->connect(sock, serv_addr);
+out:
+  return retval;
+}

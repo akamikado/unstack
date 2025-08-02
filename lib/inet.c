@@ -8,16 +8,28 @@
 
 int inet_create(struct socket *sock, int protocol) {
   int retval = -1;
-  if (protocol != 0 || protocol != IP_PROTO_TCP) {
+  if (protocol != 0 && protocol != IP_PROTO_TCP) {
     goto out;
   }
   struct sock *sk = tcp_alloc_sock();
-  sk->protocol = protocol;
   if (sk == NULL) {
     goto out;
   }
+  sk->protocol = protocol;
+  switch (protocol) {
+  case 0:
+  case IP_PROTO_TCP:
+    sk->ops = &tcp_ops;
+    break;
+  default:
+    goto error;
+  }
   sock->sk = sk;
   retval = 0;
+  goto out;
+
+error:
+  _free(sk);
 out:
   return retval;
 }
@@ -49,3 +61,24 @@ struct socket_ops inet_ops = {
     .bind = inet_bind,
     .connect = inet_connect,
 };
+
+int inet_pton(enum domain_type domain, const char *addr, void *dst) {
+  int retval = -1;
+  switch (domain) {
+  case AF_INET:
+    u32 octets[4] = {0};
+    if (sscanf(addr, "%d.%d.%d.%d", &octets[0], &octets[1], &octets[2],
+               &octets[3]) != 4) {
+      goto out;
+    }
+    *(u32 *)dst = (u32)((octets[0] << 24) | (octets[1] << 16) |
+                        (octets[2] << 8) | (octets[3]));
+    retval = 1;
+    goto out;
+    break;
+  default:
+    goto out;
+  }
+out:
+  return retval;
+}
