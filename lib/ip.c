@@ -38,6 +38,7 @@ out:
 /*
  * TODO:
  * 1. Fix how the data is passed to lower layer
+ * 2. Remove hardcoded ttl
  * */
 int ip_transmit_skb(struct sk_buff *skb, struct sock *sk) {
   int retval = -1;
@@ -51,7 +52,7 @@ int ip_transmit_skb(struct sk_buff *skb, struct sock *sk) {
   ih->len = htons(skb->len);
   ih->id = 0;
   *((u16 *)ih + 3) = htons((isk->flags & 0x07) << 13 | 0); // 0 is frag_offset
-  ih->ttl = isk->ttl;
+  ih->ttl = 64;
   ih->protocol = isk->protocol;
   ih->csum = 0;
   ih->src_addr = htonl(isk->src_addr);

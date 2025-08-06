@@ -43,11 +43,11 @@ int tcp_transmit_skb(struct sk_buff *skb, struct sock *sk) {
 
   // Not supporting options
   int tcp_header_size = 20;
-  struct tcphdr *th = (struct tcphdr *)skb_push(skb, MAX_TCPHDR_LEN);
-  th->src_port = htonl(tsk->ip_sk.src_port);
-  th->dst_port = htonl(tsk->ip_sk.dst_port);
-  th->seq_num = htons(tcb->seq);
-  th->ack_num = htons(tcb->ack);
+  struct tcphdr *th = (struct tcphdr *)skb_push(skb, tcp_header_size);
+  th->src_port = htons(tsk->ip_sk.src_port);
+  th->dst_port = htons(tsk->ip_sk.dst_port);
+  th->seq_num = htonl(tcb->seq);
+  th->ack_num = htonl(tcb->ack);
   *((u16 *)th + 6) = htons((tcp_header_size >> 2) << 12 | tcb->flags);
   th->window = htons(tsk->rcv_wnd);
   th->checksum = 0;
@@ -154,6 +154,11 @@ out:
   return;
 }
 
+/*
+ * TODO:
+ * 1. After sending syn packet, have to create a timer and wait and then check
+ * if state changed or not
+ */
 int tcp_connect(struct sock *sk, struct sockaddr *addr) {
   int retval = -1;
   struct tcp_sock *tsk = tcp_sk(sk);

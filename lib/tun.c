@@ -1,6 +1,5 @@
 #include "include/tun.h"
 #include "include/util.h"
-#include <errno.h>
 #include <fcntl.h>
 #include <linux/if.h>
 #include <linux/if_tun.h>

@@ -10,6 +10,8 @@
 #define u32 uint32_t
 #define u64 uint64_t
 
+#define DEBUG
+
 #ifdef DEBUG
 #define debug(...)                                                             \
   do {                                                                         \

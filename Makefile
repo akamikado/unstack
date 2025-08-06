@@ -3,6 +3,7 @@ CFLAGS = -Wall -g
 UNSTACK_OBJS = build/lib/inet.o\
 							 build/lib/ip.o\
 							 build/lib/netdev.o\
+							 build/lib/netlink.o\
 							 build/lib/skb.o\
 							 build/lib/sock.o\
 							 build/lib/socket.o\
